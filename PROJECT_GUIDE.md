@@ -1,0 +1,137 @@
+# Eksootikareisid - Projekti Juhend
+
+## Projekti Ülevaade
+Eksootikareisid on reisibüroo veebileht, mis võimaldab klientidel:
+- Sirvida ja otsida eksootilisi reisipakette
+- Broneerida reise
+- Vaadata reisiinfot erinevates keeltes
+- Hallata oma broneeringuid
+
+### Tehnoloogiad
+- **Frontend**: Next.js 15, React 19, TailwindCSS
+- **Backend**: Next.js API Routes
+- **Andmebaas**: MariaDB
+- **Autentimine**: (planeeritud)
+- **Keeled**: et, en, ru, lv, lt
+
+## Tehtud Tööd
+
+### 1. Projekti Seadistamine
+- [x] Next.js projekti loomine
+- [x] TailwindCSS seadistamine
+- [x] Põhikomponentide loomine (Layout, Navbar)
+- [x] MariaDB andmebaasi seadistamine
+
+### 2. Tõlkesüsteemi Ümberkorraldamine
+- [x] Staatiliste tõlkefailide eemaldamine
+- [x] Andmebaasi skeemi loomine tõlgete jaoks
+- [x] Keeletabelite seadistamine
+
+## Käimasolevad Tööd
+
+### 1. Tõlkesüsteemi Implementeerimine
+- [x] API endpointide loomine tõlgete jaoks
+  - GET /api/translations?lang=et - tõlgete pärimine
+  - POST /api/translations - uue tõlke lisamine
+  - PUT /api/translations - tõlke uuendamine
+  - GET /api/languages - keelte nimekiri
+- [ ] Admin liidese loomine tõlgete haldamiseks
+- [ ] Keelevaliku komponendi lisamine
+- [ ] Dünaamiline tõlgete laadimine
+
+### 2. Avalehe Arendus
+- [ ] Hero sektsiooni kujundamine
+- [ ] Populaarsete sihtkohtade kuvamine
+- [ ] Otsingu funktsionaalsus
+- [ ] Uudiskirja vorm
+
+## Planeeritud Funktsionaalsused
+
+### 1. Autentimine ja Kasutajad
+- [ ] Registreerimine ja sisselogimine
+- [ ] Kasutajaprofiili haldamine
+- [ ] Admin kasutajate õigused
+
+### 2. Reisipaketid
+- [ ] Pakettide CRUD operatsioonid (admin)
+- [ ] Pakettide otsing ja filtreerimine
+- [ ] Broneerimissüsteem
+- [ ] Maksete integratsioon
+
+### 3. Admin Funktsionaalsus
+- [ ] Tõlgete haldamine
+- [ ] Pakettide haldamine
+- [ ] Broneeringute haldamine
+- [ ] Kasutajate haldamine
+
+### 4. Kliendi Funktsionaalsus
+- [ ] Broneeringute ajalugu
+- [ ] Lemmikute süsteem
+- [ ] Hindamised ja tagasiside
+- [ ] Uudiskirja tellimus
+
+## Disaini Põhimõtted
+- Puhas ja modernne välimus
+- Mobiilisõbralik disain
+- Kiire ja sujuv kasutajakogemus
+- Selge navigatsioon
+- Atraktiivsed pildid ja visuaalid
+
+## Andmebaasi Struktuur
+
+### Olemasolevad Tabelid
+```sql
+-- Keeled
+CREATE TABLE languages (
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    is_default BOOLEAN DEFAULT false
+);
+
+-- Sisu
+CREATE TABLE content (
+    id CHAR(36) PRIMARY KEY,
+    key_name VARCHAR(255) NOT NULL UNIQUE,
+    type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tõlked
+CREATE TABLE translations (
+    id CHAR(36) PRIMARY KEY,
+    content_id CHAR(36),
+    language_id VARCHAR(10),
+    value TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (content_id) REFERENCES content(id),
+    FOREIGN KEY (language_id) REFERENCES languages(id)
+);
+```
+
+### Planeeritud Tabelid
+- users (kasutajad)
+- packages (reisipaketid)
+- bookings (broneeringud)
+- reviews (tagasiside)
+- favorites (lemmikud)
+
+## Järgmised Sammud
+1. Tõlkesüsteemi API endpointide loomine
+2. Admin liidese põhja loomine
+3. Keelevaliku funktsionaalsuse lisamine
+4. Reisipakettide andmebaasi struktuuri loomine
+
+## Projekti Prioriteedid
+1. Põhifunktsionaalsus (tõlked, paketid, broneerimine)
+2. Admin liides
+3. Kasutajate süsteem
+4. Lisafunktsionaalsus (tagasiside, lemmikud jne)
+
+## Märkused ja Tähelepanekud
+- Kõik tekstid peavad olema tõlgitavad
+- Admin liides peab olema lihtne ja intuitiivne
+- Andmebaasi muudatused dokumenteerida
+- Regulaarsed varundused
+- Turvalise autentimise tagamine

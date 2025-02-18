@@ -1,0 +1,81 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { query } from '@/lib/db';
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const lang = searchParams.get('lang') || 'et';
+
+  try {
+    const translations = await query(`
+      SELECT c.key_name, t.value
+      FROM content c
+      LEFT JOIN translations t ON c.id = t.content_id
+      WHERE t.language_id = ?
+    `, [lang]);
+
+    return NextResponse.json({ translations });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { key_name, type, translations } = body;
+
+    // Insert content
+    const contentResult: any = await query(
+      'INSERT INTO content (id, key_name, type) VALUES (UUID(), ?, ?)',
+      [key_name, type]
+    );
+
+    // Get the generated content ID
+    const contentId = contentResult.insertId;
+
+    // Insert translations
+    for (const [langId, value] of Object.entries(translations)) {
+      await query(
+        'INSERT INTO translations (id, content_id, language_id, value) VALUES (UUID(), ?, ?, ?)',
+        [contentId, langId, value]
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { content_id, translations } = body;
+
+    // Update translations
+    for (const [langId, value] of Object.entries(translations)) {
+      await query(
+        `INSERT INTO translations (id, content_id, language_id, value)
+         VALUES (UUID(), ?, ?, ?)
+         ON DUPLICATE KEY UPDATE value = ?`,
+        [content_id, langId, value, value]
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
