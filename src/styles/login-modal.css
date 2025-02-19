@@ -124,12 +124,3 @@
     align-items: stretch;
   }
 }
-
-  background: #0066cc;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
-}

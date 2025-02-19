@@ -11,7 +11,7 @@ Eksootikareisid on reisibüroo veebileht, mis võimaldab klientidel:
 - **Frontend**: Next.js 15, React 19, TailwindCSS
 - **Backend**: Next.js API Routes
 - **Andmebaas**: MariaDB
-- **Autentimine**: (planeeritud)
+- **Autentimine**: MariaDB + bcrypt
 - **Keeled**: et, en, ru, lv, lt
 
 ## Tehtud Tööd
@@ -48,7 +48,11 @@ Eksootikareisid on reisibüroo veebileht, mis võimaldab klientidel:
 ## Planeeritud Funktsionaalsused
 
 ### 1. Autentimine ja Kasutajad
-- [ ] Registreerimine ja sisselogimine
+- [x] Registreerimine ja sisselogimine
+  - Modaalne kasutajaliides
+  - E-posti ja parooli valideerimine
+  - Turvaline paroolide krüpteerimine
+  - Telefoninumbri valideerimine
 - [ ] Kasutajaprofiili haldamine
 - [ ] Admin kasutajate õigused
 
@@ -80,6 +84,19 @@ Eksootikareisid on reisibüroo veebileht, mis võimaldab klientidel:
 ## Andmebaasi Struktuur
 
 ### Olemasolevad Tabelid
+
+```sql
+-- Kasutajad
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX email_idx (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 ```sql
 -- Keeled
 CREATE TABLE languages (

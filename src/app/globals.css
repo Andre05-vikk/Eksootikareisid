@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+.gradient-text {
+  font-family: var(--font-playfair);
+  font-size: 40px;
+  background: linear-gradient(45deg, rgb(249, 115, 22), rgb(78, 205, 196));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  letter-spacing: normal;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
