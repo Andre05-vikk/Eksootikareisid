@@ -1,17 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import '../i18n/config';
 import AuthModal from './AuthModal';
+import DepartureCalendar from './DepartureCalendar';
+import { departureCities, type DepartureCity, fetchDepartureCities } from '@/data/departureCities';
 
 export default function Navbar() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isDepartureMenuOpen, setIsDepartureMenuOpen] = useState(false);
+  const [selectedDepartureCity, setSelectedDepartureCity] = useState<DepartureCity | null>(null);
+  const [availableDepartureCities, setAvailableDepartureCities] = useState(departureCities);
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || 'et');
   const router = useRouter();
+  const departureMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (departureMenuRef.current && !departureMenuRef.current.contains(event.target as Node)) {
+        setIsDepartureMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -24,9 +42,47 @@ export default function Navbar() {
 
             <div className="hidden sm:flex items-center">
               <div className="flex space-x-8 mr-8">
-              <Link href="/destinations" className="text-slate-600 hover:text-slate-900">
-                {t('nav.destinations')}
-              </Link>
+              <div className="relative" ref={departureMenuRef}>
+                <button
+                  onClick={() => setIsDepartureMenuOpen(!isDepartureMenuOpen)}
+                  className="text-slate-600 hover:text-slate-900 flex items-center gap-1"
+                >
+                  {t('nav.calendar')}
+                  <svg
+                    className={`w-4 h-4 transition-transform ${isDepartureMenuOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {isDepartureMenuOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      {availableDepartureCities.map((city) => (
+                        <button
+                          key={city.id}
+                          className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => {
+                            setSelectedDepartureCity(city.id);
+                            setIsCalendarOpen(true);
+                            setIsDepartureMenuOpen(false);
+                          }}
+                        >
+                          {city.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
               <Link href="/packages" className="text-slate-600 hover:text-slate-900">
                 {t('nav.packages')}
               </Link>
@@ -78,6 +134,17 @@ export default function Navbar() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+      
+      {selectedDepartureCity && (
+        <DepartureCalendar
+          departureCity={selectedDepartureCity}
+          isOpen={isCalendarOpen}
+          onClose={() => {
+            setIsCalendarOpen(false);
+            setSelectedDepartureCity(null);
+          }}
+        />
+      )}
     </>
   )
 }

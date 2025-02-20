@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { departureCities } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { departureCities, type DepartureCity, fetchDepartureCities } from '@/data/departureCities';
 
 export default function SearchEngine() {
-  const [departureCity, setDepartureCity] = useState('');
+  const { t } = useTranslation();
+  const [departureCity, setDepartureCity] = useState<DepartureCity | ''>('');
   const [destination, setDestination] = useState('');
   const [dates, setDates] = useState('');
+  const [availableDepartureCities, setAvailableDepartureCities] = useState(departureCities);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,17 +22,23 @@ export default function SearchEngine() {
       <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 p-6">
         <div className="flex-1">
           <label htmlFor="departure" className="block text-sm font-medium text-gray-700 mb-1">
-            Väljumislinn
+            {t('search.departureCity')}
           </label>
           <select
             id="departure"
             value={departureCity}
-            onChange={(e) => setDepartureCity(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Kontrollime, kas väärtus on lubatud DepartureCity tüüp või tühi string
+              if (value === '' || departureCities.some(city => city.id === value)) {
+                setDepartureCity(value as DepartureCity | '');
+              }
+            }}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">Vali väljumislinn</option>
-            {departureCities.map((city) => (
-              <option key={city.value} value={city.value}>
+            <option value="">{t('search.selectDepartureCity')}</option>
+            {availableDepartureCities.map((city) => (
+              <option key={city.id} value={city.id}>
                 {city.name}
               </option>
             ))}
@@ -38,21 +47,21 @@ export default function SearchEngine() {
 
         <div className="flex-1">
           <label htmlFor="destination" className="block text-sm font-medium text-gray-700 mb-1">
-            Sihtkoht
+            {t('search.destination')}
           </label>
           <input
             type="text"
             id="destination"
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
-            placeholder="Sihtkoht"
+            placeholder={t('search.destinationPlaceholder')}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <div className="flex-1">
           <label htmlFor="dates" className="block text-sm font-medium text-gray-700 mb-1">
-            Reisi kuupäevad
+            {t('search.dates')}
           </label>
           <input
             type="date"
@@ -69,7 +78,7 @@ export default function SearchEngine() {
             className="w-full md:w-auto bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 
                      transition-colors duration-300 font-semibold"
           >
-            Otsi
+            {t('search.search')}
           </button>
         </div>
       </form>
