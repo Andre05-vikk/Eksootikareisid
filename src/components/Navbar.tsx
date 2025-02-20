@@ -1,11 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '../i18n/config';
 import AuthModal from './AuthModal';
 
 export default function Navbar() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language || 'et');
+  const router = useRouter();
 
   return (
     <>
@@ -19,13 +25,13 @@ export default function Navbar() {
             <div className="hidden sm:flex items-center">
               <div className="flex space-x-8 mr-8">
               <Link href="/destinations" className="text-slate-600 hover:text-slate-900">
-                Sihtkohad
+                {t('nav.destinations')}
               </Link>
               <Link href="/packages" className="text-slate-600 hover:text-slate-900">
-                Paketid
+                {t('nav.packages')}
               </Link>
               <Link href="/contact" className="text-slate-600 hover:text-slate-900">
-                Kontakt
+                {t('nav.contact')}
               </Link>
               </div>
               <div className="flex items-center space-x-4">
@@ -40,11 +46,27 @@ export default function Navbar() {
                 </svg>
               </a>
               <div className="h-8 w-px bg-gray-200"></div>
+              <select
+                value={language}
+                onChange={(e) => {
+                  const newLang = e.target.value;
+                  setLanguage(newLang);
+                  i18n.changeLanguage(newLang);
+                }}
+                className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 p-1.5"
+              >
+                <option value="et">🇪🇪 ET</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="ru">🇷🇺 RU</option>
+                <option value="lv">🇱🇻 LV</option>
+                <option value="lt">🇱🇹 LT</option>
+              </select>
+              <div className="h-8 w-px bg-gray-200"></div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               >
-                Logi sisse
+                {t('nav.login')}
               </button>
               </div>
             </div>
