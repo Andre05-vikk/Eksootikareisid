@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Hero />
-      <div className="container mx-auto px-4">
+      <div className="max-w-5xl mx-auto p-4">
         <SearchEngine />
       </div>
       <ContinentsSection />

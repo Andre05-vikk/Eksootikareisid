@@ -146,9 +146,102 @@ CREATE TABLE translations (
 3. Kasutajate süsteem
 4. Lisafunktsionaalsus (tagasiside, lemmikud jne)
 
+## UI ja Komponentide Struktuur
+
+### Komponentide Hierarhia
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Avaleht
+│   ├── [locale]/          # Keelte marsruutimine
+│   ├── reisid/           # Reisipakkumised
+│   └── admin/            # Admin paneel
+├── components/            # Jagatud komponendid
+│   ├── layout/           # Layout komponendid
+│   │   ├── Navbar.tsx
+│   │   ├── Footer.tsx
+│   │   └── Sidebar.tsx
+│   ├── ui/              # UI komponendid
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Modal.tsx
+│   └── features/        # Funktsionaalsed komponendid
+│       ├── SearchEngine.tsx
+│       └── BookingForm.tsx
+└── lib/                 # Utiliidid ja konfiguratsioon
+```
+
+### Stiilide Süsteem
+- **Tailwind CSS** on peamine stiilide raamistik
+- Eemaldatud eraldi CSS failid (home.css, login-modal.css)
+- Stiilid on defineeritud otse komponentides Tailwind klassidega
+- Korduvad stiilid on defineeritud Tailwind konfiguratsioonifailis
+
+### Tailwind Konfiguratsioon
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: '#FF6B6B',
+        secondary: '#4ECDC4',
+        accent: '#45B7D1',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui'],
+        display: ['Montserrat', 'sans-serif'],
+      },
+      spacing: {
+        '128': '32rem',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
+}
+```
+
+### Disaini Süsteem
+- **Värvid**:
+  - Primaar: #FF6B6B (oranž)
+  - Sekundaar: #4ECDC4 (türkiis)
+  - Aktsent: #45B7D1 (sinine)
+  - Hall: #F8F9FA (taust)
+- **Tüpograafia**:
+  - Peamine font: Inter
+  - Pealkirjade font: Montserrat
+- **Varjud**:
+  - sm: 0 1px 2px rgba(0,0,0,0.05)
+  - md: 0 4px 6px rgba(0,0,0,0.1)
+  - lg: 0 10px 15px rgba(0,0,0,0.1)
+- **Ääred**:
+  - Ümar: 0.5rem (8px)
+  - Ümaramad: 1rem (16px)
+  - Pill: 9999px
+
+### Responsive Disain
+- **Breakpoints**:
+  - sm: 640px
+  - md: 768px
+  - lg: 1024px
+  - xl: 1280px
+  - 2xl: 1536px
+- Mobile-first lähenemine
+- Fluid tüpograafia
+- Paindlik grid süsteem
+
 ## Märkused ja Tähelepanekud
 - Kõik tekstid peavad olema tõlgitavad
 - Admin liides peab olema lihtne ja intuitiivne
 - Andmebaasi muudatused dokumenteerida
 - Regulaarsed varundused
 - Turvalise autentimise tagamine
+- Komponentide taaskasutus on prioriteet
+- Järgida Tailwind CSS häid tavasid
+- Hoida komponendid väikesed ja fokusseeritud
+- Dokumenteerida kõik kohandatud komponendid
