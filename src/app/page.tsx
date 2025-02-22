@@ -1,5 +1,5 @@
 import Hero from '@/components/Hero';
-import SearchEngine from '@/components/SearchEngine';
+import SearchEngine from '@/components/SearchEngine';  // Now imports from /components/SearchEngine/index.tsx
 import ContinentsSection from '@/components/ContinentsSection';
 import PopularDestinations from '@/components/PopularDestinations';
 import LastMinuteDeals from '@/components/LastMinuteDeals';

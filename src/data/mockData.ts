@@ -28,9 +28,9 @@ export const continents: Continent[] = [
 ];
 
 export const departureCities = [
-  { name: "Tallinn", value: "TLL" },
-  { name: "Riia", value: "RIX" },
-  { name: "Vilnius", value: "VNO" }
+  { name: "Tallinn", id: "TLL" },
+  { name: "Riia", id: "RIX" },
+  { name: "Vilnius", id: "VNO" }
 ];
 
 export const popularDestinations: Destination[] = [

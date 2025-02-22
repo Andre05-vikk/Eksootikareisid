@@ -1,0 +1,13 @@
+{
+  "search": {
+    "title": "Otsi reisi",
+    "from": "Kust",
+    "to": "Kuhu",
+    "dates": "Kuupäevad",
+    "travelers": "Reisijad",
+    "search": "Otsi",
+    "adults": "Täiskasvanud",
+    "children": "Lapsed",
+    "childAge": "Lapse vanus"
+  }
+}

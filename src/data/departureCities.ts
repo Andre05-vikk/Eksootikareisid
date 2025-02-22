@@ -1,13 +1,16 @@
 // Ajutine mockdata - hiljem asendada API päringuga
-export const departureCities = [
+export interface DepartureCity {
+  id: string;
+  name: string;
+}
+
+export const departureCities: readonly DepartureCity[] = [
   { id: 'tallinn', name: 'Tallinn' },
   { id: 'riia', name: 'Riia' },
   { id: 'vilnius', name: 'Vilnius' },
   { id: 'palanga', name: 'Palanga' },
-  { id: 'varssavi', name: 'Varssavi' }
+  { id: 'kaunas', name: 'Kaunas' }
 ] as const;
-
-export type DepartureCity = typeof departureCities[number]['id'];
 
 // Hiljem asendada API päringuga
 export async function fetchDepartureCities() {

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type DepartureCity } from '@/data/departureCities';
+import { departureCities } from '@/data/mockData';
 
 /**
  * Interface representing a trip with departure date and destinations
@@ -25,18 +26,11 @@ interface DepartureCalendarProps {
  * Helper function to format city names with proper capitalization
  */
 const getCityDisplayName = (city: DepartureCity): string => {
-  const cityNames: Record<DepartureCity, string> = {
-    'tallinn': 'Tallinn',
-    'riia': 'Riia',
-    'vilnius': 'Vilnius',
-    'palanga': 'Palanga',
-    'varssavi': 'Varssavi',
-  };
-  return cityNames[city];
+  return city.name;
 };
 
 // Mock data for trips - will be replaced with API calls later
-const mockTrips: Record<DepartureCity, Trip[]> = {
+const mockTrips: Record<string, Trip[]> = {
   'tallinn': [
     { date: new Date(2025, 2, 15), destinations: ['Egiptus', 'Sri Lanka'] },
     { date: new Date(2025, 2, 30), destinations: ['Türgi'] },
@@ -48,15 +42,7 @@ const mockTrips: Record<DepartureCity, Trip[]> = {
   'vilnius': [
     { date: new Date(2025, 2, 12), destinations: ['Egiptus'] },
     { date: new Date(2025, 2, 28), destinations: ['Türgi', 'Sri Lanka'] },
-  ],
-  'palanga': [
-    { date: new Date(2025, 2, 10), destinations: ['Egiptus'] },
-    { date: new Date(2025, 2, 20), destinations: ['Türgi'] },
-  ],
-  'varssavi': [
-    { date: new Date(2025, 2, 5), destinations: ['Sri Lanka'] },
-    { date: new Date(2025, 2, 25), destinations: ['Egiptus', 'Türgi'] },
-  ],
+  ]
 };
 
 const WEEK_DAYS = ['E', 'T', 'K', 'N', 'R', 'L', 'P'] as const;
@@ -76,7 +62,8 @@ const DepartureCalendar = ({ departureCity, isOpen, onClose }: DepartureCalendar
 
   if (!isOpen) return null;
 
-  const popularDestinations = mockTrips[departureCity]
+  const trips = mockTrips[departureCity.id] || [];
+const popularDestinations = trips
     .filter(trip => trip.date.getMonth() === selectedMonth)
     .flatMap(trip => trip.destinations)
     .reduce((unique, dest) => unique.includes(dest) ? unique : [...unique, dest], [] as string[]);
@@ -90,7 +77,7 @@ const DepartureCalendar = ({ departureCity, isOpen, onClose }: DepartureCalendar
   };
 
   const hasTripOnDate = (date: Date): Trip | undefined => {
-    return mockTrips[departureCity]?.find(trip => 
+    return trips.find(trip => 
       trip.date.getDate() === date.getDate() &&
       trip.date.getMonth() === date.getMonth() &&
       trip.date.getFullYear() === date.getFullYear()

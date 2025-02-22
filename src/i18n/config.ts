@@ -27,7 +27,29 @@ i18n
             destination: 'Sihtkoht',
             destinationPlaceholder: 'Sihtkoht',
             dates: 'Reisi kuupäevad',
-            search: 'Otsi'
+            search: 'Otsi',
+            region: 'Piirkond',
+            nights: 'Ööde arv',
+            more: 'Rohkem valikuid',
+            apply: 'Rakenda',
+            hotelRating: 'Hotelli tärnid',
+            hotelName: 'Hotelli nimi',
+            mealPlan: 'Toitlustus',
+            allHotels: 'Kõik hotellid',
+            allMealPlans: 'Kõik toitlustuse variandid',
+            departureCity: 'Lähtelinn',
+            selectDepartureCity: 'Vali lähtelinn',
+            searchCity: 'Otsi linna',
+            nights: 'Ööde arv',
+            destination: 'Sihtkoht',
+            destinationPlaceholder: 'Vali sihtkoht',
+            dates: 'Väljumiskuupäev',
+            travelers: {
+              adults: 'Täiskasvanud',
+              children: 'Lapsed',
+              child: 'Laps',
+              years: 'aastat'
+            }
           }
         }
       },
@@ -49,7 +71,29 @@ i18n
             destination: 'Destination',
             destinationPlaceholder: 'Destination',
             dates: 'Travel dates',
-            search: 'Search'
+            search: 'Search',
+            region: 'Region',
+            nights: 'Number of nights',
+            more: 'More options',
+            apply: 'Apply',
+            hotelRating: 'Hotel rating',
+            hotelName: 'Hotel name',
+            mealPlan: 'Meal plan',
+            allHotels: 'All hotels',
+            allMealPlans: 'All meal plans',
+            departureCity: 'Departure city',
+            selectDepartureCity: 'Select departure city',
+            searchCity: 'Search city',
+            nights: 'Number of nights',
+            destination: 'Destination',
+            destinationPlaceholder: 'Select destination',
+            dates: 'Departure date',
+            travelers: {
+              adults: 'Adults',
+              children: 'Children',
+              child: 'Child',
+              years: 'years'
+            }
           }
         }
       },
@@ -71,7 +115,29 @@ i18n
             destination: 'Пункт назначения',
             destinationPlaceholder: 'Пункт назначения',
             dates: 'Даты поездки',
-            search: 'Поиск'
+            search: 'Поиск',
+            region: 'Регион',
+            nights: 'Количество ночей',
+            more: 'Больше опций',
+            apply: 'Применить',
+            hotelRating: 'Рейтинг отеля',
+            hotelName: 'Название отеля',
+            mealPlan: 'Питание',
+            allHotels: 'Все отели',
+            allMealPlans: 'Все варианты питания',
+            departureCity: 'Город вылета',
+            selectDepartureCity: 'Выберите город вылета',
+            searchCity: 'Поиск города',
+            nights: 'Количество ночей',
+            destination: 'Направление',
+            destinationPlaceholder: 'Выберите направление',
+            dates: 'Дата вылета',
+            travelers: {
+              adults: 'Взрослые',
+              children: 'Дети',
+              child: 'Ребенок',
+              years: 'лет'
+            }
           }
         }
       },
@@ -93,7 +159,29 @@ i18n
             destination: 'Galamērķis',
             destinationPlaceholder: 'Galamērķis',
             dates: 'Ceļojuma datumi',
-            search: 'Meklēt'
+            search: 'Meklēt',
+            region: 'Reģions',
+            nights: 'Nakts skaits',
+            more: 'Vairāk opciju',
+            apply: 'Piemērot',
+            hotelRating: 'Viesnīcas reitings',
+            hotelName: 'Viesnīcas nosaukums',
+            mealPlan: 'Ēdināšana',
+            allHotels: 'Visas viesnīcas',
+            allMealPlans: 'Visi ēdināšanas varianti',
+            departureCity: 'Izlidošanas pilsēta',
+            selectDepartureCity: 'Izvēlieties izlidošanas pilsētu',
+            searchCity: 'Meklēt pilsētu',
+            nights: 'Nakšu skaits',
+            destination: 'Galamērķis',
+            destinationPlaceholder: 'Izvēlieties galamērķi',
+            dates: 'Izlidošanas datums',
+            travelers: {
+              adults: 'Pieaugušie',
+              children: 'Bērni',
+              child: 'Bērns',
+              years: 'gadi'
+            }
           }
         }
       },
@@ -115,7 +203,29 @@ i18n
             destination: 'Kelionės tikslas',
             destinationPlaceholder: 'Kelionės tikslas',
             dates: 'Kelionės datos',
-            search: 'Ieškoti'
+            search: 'Ieškoti',
+            region: 'Regionas',
+            nights: 'Naktų skaičius',
+            more: 'Daugiau parinkčių',
+            apply: 'Taikyti',
+            hotelRating: 'Viešbučio reitingas',
+            hotelName: 'Viešbučio pavadinimas',
+            mealPlan: 'Maitinimas',
+            allHotels: 'Visi viešbučiai',
+            allMealPlans: 'Visi maitinimo variantai',
+            departureCity: 'Išvykimo miestas',
+            selectDepartureCity: 'Pasirinkite išvykimo miestą',
+            searchCity: 'Ieškoti miesto',
+            nights: 'Naktų skaičius',
+            destination: 'Kelionės tikslas',
+            destinationPlaceholder: 'Pasirinkite kelionės tikslą',
+            dates: 'Išvykimo data',
+            travelers: {
+              adults: 'Suaugusieji',
+              children: 'Vaikai',
+              child: 'Vaikas',
+              years: 'metai'
+            }
           }
         }
       }
