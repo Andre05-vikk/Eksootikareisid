@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Dialog } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import {useState} from 'react';
+import {Dialog} from '@headlessui/react';
+import {XMarkIcon} from '@heroicons/react/24/outline';
 
 type AuthMode = 'login' | 'register';
 type ValidationErrors = { [key: string]: string };
@@ -107,7 +107,7 @@ export default function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClos
 
           <div className="flex justify-between items-center mb-6">
             <Dialog.Title className="text-xl font-bold">
-              {mode === 'login' ? 'Logi sisse' : 'Uus konto'}
+              {mode === 'login' ? 'Logi sisse' : 'Loo konto'}
             </Dialog.Title>
             <button
               onClick={() => {

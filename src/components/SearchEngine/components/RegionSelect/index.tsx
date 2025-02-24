@@ -1,76 +1,94 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { regions, type Region, type City } from '@/data/regions';
-import { ChevronDown, MapPin } from 'lucide-react';
+import {useEffect, useRef, useState} from 'react';
+import {Check, Search} from 'lucide-react';
+import {type City} from '@/data/regions';
+import {countries} from '@/data/destinations';
 
-interface RegionSelectProps {
+export interface RegionSelectProps {
   selectedCity: City | null;
-  onSelect: (city: City) => void;
+  onSelectAction: (city: City | null) => void;
+  selectedDepartureCities: string[];
+  onCloseAction: () => void;
 }
 
-export default function RegionSelect({ selectedCity, onSelect }: RegionSelectProps) {
-  const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
+export default function RegionSelect({ selectedCity, onSelectAction, selectedDepartureCities, onCloseAction }: RegionSelectProps)  {
+  const [search, setSearch] = useState('');
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  const handleRegionClick = (region: Region) => {
-    setSelectedRegion(region === selectedRegion ? null : region);
-  };
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onCloseAction();
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [onCloseAction]);
 
-  const handleCityClick = (city: City) => {
-    onSelect(city);
-    setIsOpen(false);
+  const filteredDestinations = countries.filter(country => {
+    const matchesSearch = country.name.toLowerCase().includes(search.toLowerCase());
+    const matchesDeparture = selectedDepartureCities.length === 0 || 
+      country.departureCities.some(city => selectedDepartureCities.includes(city));
+    return matchesSearch && matchesDeparture;
+  });
+
+  // Destination click handler
+  const handleDestinationClick = (destination: { id: string; name: string }) => {
+    if (selectedCity?.id === destination.id) {
+      onSelectAction(null);
+    } else {
+      onSelectAction({ id: destination.id, name: destination.name, country: destination.id });
+    }
+    onCloseAction();
   };
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full p-3 text-left border rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <div className="flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-gray-500" />
-          <span>{selectedCity ? `${selectedCity.name}, ${selectedCity.country}` : t('search.destination')}</span>
+    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50" ref={modalRef}>
+      {/* Search input */}
+      <div className="p-3 border-b border-gray-200">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Otsi sihtkohta"
+            className="w-full h-10 pl-9 pr-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-orange-500"
+          />
         </div>
-        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
+      </div>
 
-      {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg">
-          <div className="p-2">
-            {regions.map((region) => (
-              <div key={region.id}>
-                <button
-                  onClick={() => handleRegionClick(region)}
-                  className="flex items-center justify-between w-full p-2 text-left hover:bg-gray-100 rounded-md"
-                >
-                  <span className="font-medium">{region.name}</span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-gray-500 transition-transform ${
-                      selectedRegion?.id === region.id ? 'rotate-180' : ''
-                    }`}
-                  />
-                </button>
-                {selectedRegion?.id === region.id && (
-                  <div className="ml-4 mt-1 space-y-1">
-                    {region.cities.map((city) => (
-                      <button
-                        key={city.id}
-                        onClick={() => handleCityClick(city)}
-                        className="flex items-center w-full p-2 text-left hover:bg-gray-100 rounded-md"
-                      >
-                        <span>{`${city.name}, ${city.country}`}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Destinations list */}
+      <div className="max-h-64 overflow-y-auto p-2">
+        {filteredDestinations.map(destination => (
+          <label 
+            key={destination.id} 
+            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-50 rounded"
+            onClick={() => handleDestinationClick(destination)}
+          >
+            <div className="relative flex items-center justify-center w-4 h-4">
+              <input
+                type="radio"
+                checked={selectedCity?.id === destination.id}
+                onChange={() => handleDestinationClick(destination)}
+                className="appearance-none w-4 h-4 border-2 border-gray-300 rounded-full checked:border-green-500 checked:bg-white"
+              />
+              {selectedCity?.id === destination.id && (
+                <Check className="w-4 h-4 text-green-500 absolute stroke-[3.5]" />
+              )}
+            </div>
+            <span className="text-sm">{destination.name}</span>
+            {!selectedDepartureCities.some(city => destination.departureCities.includes(city)) && (
+              <span className="ml-auto text-xs text-orange-500">
+                {destination.departureCities.map(city => 
+                  city === 'warsaw' ? 'Warsaw' : city === 'riga' ? 'Riga' : ''
+                ).filter(Boolean).join(', ')}
+              </span>
+            )}
+          </label>
+        ))}
+      </div>
     </div>
   );
 }

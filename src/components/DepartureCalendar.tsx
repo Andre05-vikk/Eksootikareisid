@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { type DepartureCity } from '@/data/departureCities';
-import { departureCities } from '@/data/mockData';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {type DepartureCity} from '@/data/departureCities';
+import {trips} from '@/data/trips';
+import {getDestinationName} from '@/data/destinations';
 
 /**
  * Interface representing a trip with departure date and destinations
@@ -11,38 +12,26 @@ import { departureCities } from '@/data/mockData';
 interface Trip {
   date: Date;
   destinations: string[];
+  price: number;
 }
 
 /**
  * Props for the DepartureCalendar component
  */
 interface DepartureCalendarProps {
-  departureCity: DepartureCity;
+  departureCities: DepartureCity[];
   isOpen: boolean;
   onClose: () => void;
+  onDateSelect?: (date: Date) => void;
 }
-
-/**
- * Helper function to format city names with proper capitalization
- */
-const getCityDisplayName = (city: DepartureCity): string => {
-  return city.name;
-};
-
-// Mock data for trips - will be replaced with API calls later
-const mockTrips: Record<string, Trip[]> = {
-  'tallinn': [
-    { date: new Date(2025, 2, 15), destinations: ['Egiptus', 'Sri Lanka'] },
-    { date: new Date(2025, 2, 30), destinations: ['Türgi'] },
-  ],
-  'riia': [
-    { date: new Date(2025, 2, 8), destinations: ['Egiptus', 'Türgi'] },
-    { date: new Date(2025, 2, 22), destinations: ['Sri Lanka'] },
-  ],
-  'vilnius': [
-    { date: new Date(2025, 2, 12), destinations: ['Egiptus'] },
-    { date: new Date(2025, 2, 28), destinations: ['Türgi', 'Sri Lanka'] },
-  ]
+const getTripsForCity = (cityId: string): Trip[] => {
+  return trips
+    .filter(trip => trip.departureCityId === cityId)
+    .map(trip => ({
+      date: new Date(trip.departureDate),
+      destinations: [getDestinationName(trip.destinationId)],
+      price: trip.price
+    }));
 };
 
 const WEEK_DAYS = ['E', 'T', 'K', 'N', 'R', 'L', 'P'] as const;
@@ -55,19 +44,32 @@ const MONTHS = [
   'JUULI', 'AUGUST', 'SEPTEMBER', 'OKTOOBER', 'NOVEMBER', 'DETSEMBER'
 ] as const;
 
-const DepartureCalendar = ({ departureCity, isOpen, onClose }: DepartureCalendarProps) => {
+const DepartureCalendar = ({ departureCities, isOpen, onClose, onDateSelect }: DepartureCalendarProps) => {
   const { t } = useTranslation();
   const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH);
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 
+  const modalRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
   if (!isOpen) return null;
+  if (!departureCities || departureCities.length === 0) return null;
 
-  const trips = mockTrips[departureCity.id] || [];
-const popularDestinations = trips
-    .filter(trip => trip.date.getMonth() === selectedMonth)
-    .flatMap(trip => trip.destinations)
-    .reduce((unique, dest) => unique.includes(dest) ? unique : [...unique, dest], [] as string[]);
-
+  // Kombineerime kõigi valitud linnade reisid
+  const allTrips = departureCities.flatMap(city => getTripsForCity(city.id));
+  
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
   };
@@ -77,11 +79,17 @@ const popularDestinations = trips
   };
 
   const hasTripOnDate = (date: Date): Trip | undefined => {
-    return trips.find(trip => 
+    return allTrips.find(trip => 
       trip.date.getDate() === date.getDate() &&
       trip.date.getMonth() === date.getMonth() &&
       trip.date.getFullYear() === date.getFullYear()
     );
+  };
+
+  const handleDateClick = (date: Date, trip?: Trip) => {
+    if (trip && onDateSelect) {
+      onDateSelect(date);
+    }
   };
 
   const renderCalendarDays = () => {
@@ -89,16 +97,20 @@ const popularDestinations = trips
     const daysInMonth = getDaysInMonth(CURRENT_YEAR, selectedMonth);
     const firstDay = getFirstDayOfMonth(CURRENT_YEAR, selectedMonth);
     const totalDays = Math.ceil((daysInMonth + firstDay) / 7) * 7;
-
+  
     for (let i = 0; i < totalDays; i++) {
       const dayNumber = i - firstDay + 1;
       const currentDayDate = new Date(CURRENT_YEAR, selectedMonth, dayNumber);
       const trip = hasTripOnDate(currentDayDate);
       
       days.push(
-        <div key={i} className={`group relative p-1.5 text-center ${trip ? 'text-gray-900 font-bold cursor-pointer' : 'text-gray-500'}`}
+        <div 
+          key={i} 
+          className={`group relative p-1.5 text-center ${trip ? 'text-gray-900 font-bold cursor-pointer' : 'text-gray-500'}`}
           onMouseEnter={() => setHoveredDate(currentDayDate)}
-          onMouseLeave={() => setHoveredDate(null)}>
+          onMouseLeave={() => setHoveredDate(null)}
+          onClick={() => trip && handleDateClick(currentDayDate, trip)}
+        >
           {dayNumber > 0 && dayNumber <= daysInMonth ? dayNumber : ''}
           {hoveredDate?.getDate() === dayNumber && trip && (
             <div className="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 bg-orange-500 text-white shadow-lg rounded-lg px-2.5 py-1.5 mb-2 text-sm w-max max-w-[160px] group-hover:visible">
@@ -156,7 +168,7 @@ const popularDestinations = trips
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-xl font-bold">{MONTHS[selectedMonth]}</h2>
             <div className="text-base">
-              {t('calendar.departureFrom')}: <span className="font-bold text-orange-500">{getCityDisplayName(departureCity)}</span>
+              Väljumine: <span className="font-bold text-orange-500">{departureCities.map(city => city.name).join(', ')}</span>
             </div>
             <button
               onClick={onClose}
@@ -165,22 +177,6 @@ const popularDestinations = trips
               ×
             </button>
           </div>
-
-          {popularDestinations.length > 0 && (
-            <div className="mb-3 flex items-center gap-3">
-              <h3 className="text-base">Soovitatud sihtkohad:</h3>
-              <div className="flex gap-1.5">
-                {popularDestinations.map((dest, index) => (
-                  <span
-                    key={index}
-                    className={`px-3 py-1 rounded-full text-sm ${index === 0 ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-500'}`}
-                  >
-                    {dest}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
 
           <div className="grid grid-cols-7 gap-1">
             {WEEK_DAYS.map(day => (

@@ -1,39 +1,42 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Building, Search, X } from 'lucide-react';
-import { type DepartureCity } from '@/data/departureCities';
+import {useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Building, Check, Search, X} from 'lucide-react';
+import {type DepartureCity} from '@/data/departureCities';
 
-interface DepartureCitySelectProps {
-  value: string;
-  onChange: (value: string) => void;
-  cities: readonly DepartureCity[];
-  onClose: () => void;
+export interface DepartureCitySelectProps {
+  selectedCities: string[];
+  onChangeAction: (cities: string[]) => void;
+  cities: DepartureCity[];
+  onCloseAction: () => void;
 }
 
-export default function DepartureCitySelect({ value, onChange, cities, onClose }: DepartureCitySelectProps) {
+export default function DepartureCitySelect({ selectedCities, onChangeAction, cities, onCloseAction }: DepartureCitySelectProps) {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Filter cities based on search
-  const filteredCities = cities.filter((city) =>
-    city.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Close modal when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
+        onCloseAction();
       }
     }
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
+  }, [onCloseAction]);
+
+  const handleCityToggle = (cityId: string) => {
+    if (selectedCities.includes(cityId)) {
+      onChangeAction(selectedCities.filter(id => id !== cityId));
+    } else if (selectedCities.length < 3) {
+      onChangeAction([...selectedCities, cityId]);
+    } else {
+      alert('Maksimaalselt saab valida 3 lähtekohta');
+    }
+  };
 
   return (
     <div className="relative" ref={modalRef}>
@@ -62,21 +65,23 @@ export default function DepartureCitySelect({ value, onChange, cities, onClose }
 
         {/* Cities List */}
         <div className="max-h-64 overflow-y-auto">
-          {filteredCities.map((city) => (
-            <button
-              key={city.id}
-              onClick={() => {
-                onChange(city.id);
-                onClose();
-              }}
-              className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 ${
-                value === city.id ? 'bg-blue-50 text-blue-600' : ''
-              }`}
-            >
-              <Building className="w-4 h-4 text-gray-400" />
-              <span>{city.name}</span>
-            </button>
-          ))}
+          {cities
+            .filter(city => city.name.toLowerCase().includes(search.toLowerCase()))
+            .map((city) => (
+              <button
+                key={city.id}
+                onClick={() => handleCityToggle(city.id)}
+                className={`w-full px-4 py-2 text-left hover:bg-orange-50 flex items-center gap-2 ${
+                  selectedCities.includes(city.id) ? 'text-gray-900' : 'text-gray-700'
+                }`}
+              >
+                <Building className="w-4 h-4 text-gray-400" />
+                <span>{city.name}</span>
+                {selectedCities.includes(city.id) && (
+                  <Check className="w-4 h-4 ml-auto text-green-500" />
+                )}
+              </button>
+            ))}
         </div>
       </div>
     </div>

@@ -1,23 +1,23 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
+import {useRouter} from 'next/navigation';
+import {useTranslation} from 'react-i18next';
 import '../i18n/config';
 import AuthModal from './AuthModal';
 import DepartureCalendar from './DepartureCalendar';
-import { departureCities, type DepartureCity, fetchDepartureCities } from '@/data/departureCities';
+import {departureCities, type DepartureCity} from '@/data/departureCities';
 
 export default function Navbar() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isDepartureMenuOpen, setIsDepartureMenuOpen] = useState(false);
   const [selectedDepartureCity, setSelectedDepartureCity] = useState<DepartureCity | null>(null);
-  const [availableDepartureCities, setAvailableDepartureCities] = useState(departureCities);
+  const [availableDepartureCities] = useState(departureCities);
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || 'et');
-  const router = useRouter();
+  useRouter();
   const departureMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function Navbar() {
       <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link href="/" className="gradient-text">
+            <Link href="/" className="gradient-text text-xl sm:text-2xl whitespace-nowrap">
               Eksootikareisid
             </Link>
 
@@ -137,7 +137,7 @@ export default function Navbar() {
       
       {selectedDepartureCity && (
         <DepartureCalendar
-          departureCity={selectedDepartureCity}
+          departureCities={[selectedDepartureCity]}
           isOpen={isCalendarOpen}
           onClose={() => {
             setIsCalendarOpen(false);

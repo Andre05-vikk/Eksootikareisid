@@ -1,21 +1,20 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Users, Minus, Plus } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import React, {useEffect, useRef, useState} from 'react';
+import {Users} from 'lucide-react';
 
 export interface Traveler {
   adults: number;
-  children: { age: number }[];
+  children: number;
+  childrenAges: number[];
 }
 
 interface TravelersInputProps {
   value: Traveler;
-  onChange: (value: Traveler) => void;
+  onChangeAction: (value: Traveler) => void;
 }
 
-export default function TravelersInput({ value, onChange }: TravelersInputProps) {
-  const { t } = useTranslation();
+export default function TravelersInput({ value, onChangeAction }: TravelersInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -31,115 +30,117 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
   }, []);
 
   const handleAdultsChange = (delta: number) => {
-    const newAdults = Math.max(1, Math.min(value.adults + delta, 10 - value.children.length));
-    onChange({ ...value, adults: newAdults });
+    const newAdults = Math.max(1, value.adults + delta);
+    onChangeAction({ ...value, adults: newAdults });
   };
 
   const handleChildrenChange = (delta: number) => {
-    const currentChildren = value.children;
-    if (delta > 0 && currentChildren.length + value.adults < 10) {
-      onChange({
-        ...value,
-        children: [...currentChildren, { age: 2 }]
-      });
-    } else if (delta < 0 && currentChildren.length > 0) {
-      onChange({
-        ...value,
-        children: currentChildren.slice(0, -1)
-      });
-    }
+    const newChildren = Math.max(0, value.children + delta);
+    const newChildrenAges = delta > 0 
+      ? [...value.childrenAges, 9]
+      : value.childrenAges.slice(0, -1);
+    onChangeAction({ ...value, children: newChildren, childrenAges: newChildrenAges });
   };
 
   const handleChildAgeChange = (index: number, age: number) => {
-    const newChildren = [...value.children];
-    newChildren[index] = { age: Math.max(0, Math.min(age, 17)) };
-    onChange({ ...value, children: newChildren });
-  };
-
-  const getTravelersText = () => {
-    const total = value.adults + value.children.length;
-    return `${total} reisija${total !== 1 ? 't' : ''}`;
+    const newChildrenAges = [...value.childrenAges];
+    newChildrenAges[index] = age;
+    onChangeAction({ ...value, childrenAges: newChildrenAges });
   };
 
   return (
     <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full p-3 text-left border rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      {/* Input display */}
+      <div
+        onClick={() => setIsOpen(true)}
+        className="w-full h-12 px-3 text-left bg-gray-50 rounded flex items-center gap-2 cursor-pointer"
       >
-        <div className="flex items-center gap-2">
-          <Users className="w-5 h-5 text-gray-500" />
-          <span>{getTravelersText()}</span>
-        </div>
-      </button>
+        <Users className="w-4 h-4 text-gray-400" />
+        <span className="text-gray-700">
+          {value.adults}{value.children > 0 ? ` + ${value.children}` : ''}
+        </span>
+      </div>
 
+      {/* Modal */}
       {isOpen && (
         <div 
           ref={modalRef}
-          className="absolute z-50 mt-1 p-4 bg-white border rounded-lg shadow-lg w-72 space-y-4"
+          className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
         >
-          {/* Adults */}
-          <div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium">{t('search.travelers.adults')}</span>
-              <div className="flex items-center gap-3">
-                <button
-                  className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
-                  onClick={() => handleAdultsChange(-1)}
-                  disabled={value.adults <= 1}
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="w-4 text-center">{value.adults}</span>
-                <button
-                  className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
-                  onClick={() => handleAdultsChange(1)}
-                  disabled={value.adults + value.children.length >= 10}
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
+          {/* Täiskasvanud */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="text-center">
+              <div className="text-lg font-medium mb-2">Täiskasvanud</div>
+              <div className="text-sm text-gray-600">Vanus 16+</div>
+            </div>
+            <div className="flex items-center justify-center gap-6 mt-2">
+              <button
+                onClick={() => handleAdultsChange(-1)}
+                className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-orange-500"
+                disabled={value.adults <= 1}
+              >
+                -
+              </button>
+              <span className="text-lg w-8 text-center">{value.adults}</span>
+              <button
+                onClick={() => handleAdultsChange(1)}
+                className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-orange-500"
+              >
+                +
+              </button>
             </div>
           </div>
 
-          {/* Children */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-medium">{t('search.travelers.children')}</span>
-              <div className="flex items-center gap-3">
-                <button
-                  className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
-                  onClick={() => handleChildrenChange(-1)}
-                  disabled={value.children.length === 0}
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="w-4 text-center">{value.children.length}</span>
-                <button
-                  className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
-                  onClick={() => handleChildrenChange(1)}
-                  disabled={value.adults + value.children.length >= 10}
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
+          {/* Lapsed */}
+          <div className="p-4">
+            <div className="text-center">
+              <div className="text-lg font-medium mb-2">Lapsed</div>
+              <div className="text-sm text-gray-600">Vanus 0-15 aastat</div>
+            </div>
+            <div className="flex items-center justify-center gap-6 mt-2">
+              <button
+                onClick={() => handleChildrenChange(-1)}
+                className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-orange-500"
+                disabled={value.children <= 0}
+              >
+                -
+              </button>
+              <span className="text-lg w-8 text-center">{value.children}</span>
+              <button
+                onClick={() => handleChildrenChange(1)}
+                className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-orange-500"
+              >
+                +
+              </button>
             </div>
 
-            {/* Child ages */}
-            {value.children.map((child, index) => (
-              <div key={index} className="flex items-center gap-2 mt-2">
-                <span className="text-sm text-gray-600">{t('search.travelers.child')} {index + 1}</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={17}
-                  value={child.age}
-                  onChange={(e) => handleChildAgeChange(index, parseInt(e.target.value) || 0)}
-                  className="w-16 p-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-600">{t('search.travelers.years')}</span>
+            {/* Laste vanused */}
+            {value.children > 0 && (
+              <div className="mt-4 space-y-3">
+                {value.childrenAges.map((age, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="text-sm">
+                      {index + 1}. Lapse vanus:
+                    </div>
+                    <div className="flex items-center justify-center gap-6">
+                      <button
+                        onClick={() => handleChildAgeChange(index, Math.max(0, age - 1))}
+                        className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-orange-500"
+                      >
+                        -
+                      </button>
+                      <span className="text-lg w-8 text-center">{age}</span>
+                      <button
+                        onClick={() => handleChildAgeChange(index, Math.min(15, age + 1))}
+                        className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-orange-500"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}
