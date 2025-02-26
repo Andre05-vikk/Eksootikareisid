@@ -79,7 +79,10 @@ next-env.d.ts
 /.husky         # Uncommit if you want to ignore husky hooks
 .idea/
 
-.cursor directory
-.cursor/
-.windsurfrules/
+# Remove old path
 AI_PROJECT_RULES.md
+
+# Add .cursor directory
+.cursor/
+
+.windsurfrules/

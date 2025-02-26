@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 export default function CoralTravelTerms() {
     useEffect(() => {
         // Ava link uues tabis/aknas
-        window.open('https://www.coraltravel.ee/tingimused', '_blank');
+        window.open('https://b2ccdn.coraltravel.ee/content/Charter%20flights%20general%20terms%20and%20conditions_2024%20(2).pdf', '_blank');
     }, []);
 
     return (
