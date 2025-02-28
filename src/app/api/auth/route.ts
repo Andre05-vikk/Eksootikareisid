@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { query } from '@/lib/db';
+import { query } from '../db/db';
 import bcrypt from 'bcryptjs';
+import { signToken } from '../lib/jwt';
 
 // Validation schemas
 const registerSchema = z.object({
@@ -49,9 +50,15 @@ export async function POST(request: Request) {
         [validatedData.email, hashedPassword, validatedData.phone]
       ) as any;
 
+      const token = signToken({
+        userId: result.insertId,
+        email: validatedData.email
+      });
+
       return NextResponse.json({ 
         message: 'Konto on edukalt loodud',
-        userId: result.insertId
+        userId: result.insertId,
+        token
       });
 
     } else if (type === 'login') {
@@ -80,11 +87,15 @@ export async function POST(request: Request) {
         );
       }
 
-      // TODO: Add session handling here
+      const token = signToken({
+        userId: user.id,
+        email: validatedData.email
+      });
 
       return NextResponse.json({ 
         message: 'Edukalt sisse logitud',
-        userId: user.id
+        userId: user.id,
+        token
       });
     }
 
