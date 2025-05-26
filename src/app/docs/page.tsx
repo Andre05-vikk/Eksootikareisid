@@ -40,7 +40,7 @@ export default function ApiDocs() {
         setTimeout(() => {
           // Initialize Swagger UI after script is loaded
           const ui = window.SwaggerUIBundle({
-            url: '/api/swagger',
+            url: '/swagger.yaml',
             dom_id: '#swagger-ui',
             deepLinking: true,
             presets: [

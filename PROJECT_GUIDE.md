@@ -23,6 +23,19 @@ npm run build
 - npm 9.0 või uuem
 - MariaDB 10.6 või uuem
 
+## Node.js versiooni nõue ja nvm kasutamine
+
+See projekt vajab Node.js versiooni 20.x (soovitavalt 20.12.2). Kui Sinu masinas on muu versioon, võivad tekkida buildi- või jooksutamise vead.
+
+Kasuta [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager), et tagada õige Node.js versioon:
+
+```sh
+nvm install       # Paigaldab versiooni .nvmrc faili põhjal
+nvm use           # Lülitab õigesse Node.js versiooni
+```
+
+Kui nvm puudub, paigalda see esmalt [nvm juhiste](https://github.com/nvm-sh/nvm#installing-and-updating) järgi.
+
 ## Projekti Ülevaade
 
 Eksootikareisid on modernne reisibüroo veebileht, mis keskendub eksootiliste reiside müügile. Projekt on ehitatud kasutades kaasaegseid tehnoloogiaid ja järgib parimaid arenduspraktikaid.
@@ -307,25 +320,118 @@ CREATE TABLE translations (
 ### Komponentide Hierarhia
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Avaleht
-│   ├── [locale]/          # Keelte marsruutimine
-│   ├── reisid/           # Reisipakkumised
-│   └── admin/            # Admin paneel
-├── components/            # Jagatud komponendid
-│   ├── layout/           # Layout komponendid
-│   │   ├── Navbar.tsx
-│   │   ├── Footer.tsx
-│   │   └── Sidebar.tsx
-│   ├── ui/              # UI komponendid
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
-│   │   └── Modal.tsx
-│   └── features/        # Funktsionaalsed komponendid
-│       ├── SearchEngine.tsx
-│       └── BookingForm.tsx
-└── lib/                 # Utiliidid ja konfiguratsioon
+├── app/
+│   ├── api/
+│   │   ├── auth/
+│   │   │   └── route.ts
+│   │   ├── languages/
+│   │   │   └── route.ts
+│   │   ├── lib/
+│   │   │   ├── db.ts
+│   │   │   └── jwt.ts
+│   │   ├── middleware/
+│   │   │   └── authMiddleware.ts
+│   │   ├── swagger/
+│   │   │   └── route.ts
+│   │   ├── translations/
+│   │   │   └── route.ts
+│   │   └── users/
+│   │       └── route.ts
+│   ├── docs/
+│   │   └── page.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── privaatsuspoliitika/
+│   │   └── page.tsx
+│   ├── reisitingimused/
+│   │   ├── anex/
+│   │   │   └── page.tsx
+│   │   ├── coral-travel/
+│   │   │   └── page.tsx
+│   │   ├── itaka/
+│   │   │   └── page.tsx
+│   │   ├── join-up/
+│   │   │   └── page.tsx
+│   │   ├── novatours/
+│   │   │   └── page.tsx
+│   │   ├── tez-tour/
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+├── components/
+│   ├── AreaSelect/
+│   │   └── index.tsx
+│   ├── AuthModal.tsx
+│   ├── ContinentsSection.tsx
+│   ├── DepartureCalendar/
+│   │   └── index.tsx
+│   ├── DepartureCalendar.tsx
+│   ├── DepartureCitySelect/
+│   │   └── index.tsx
+│   ├── Footer.tsx
+│   ├── Hero.tsx
+│   ├── LastMinuteDeals.tsx
+│   ├── Layout.tsx
+│   ├── Navbar.tsx
+│   ├── PopularDestinations.tsx
+│   ├── RegionSelect/
+│   │   └── index.tsx
+│   ├── SearchEngine/
+│   │   ├── components/
+│   │   │   ├── AdvancedSearch/
+│   │   │   │   └── index.tsx
+│   │   │   ├── AreaSelect/
+│   │   │   │   └── index.tsx
+│   │   │   ├── DateRangePicker/
+│   │   │   │   └── index.tsx
+│   │   │   ├── DepartureCitySelect/
+│   │   │   │   └── index.tsx
+│   │   │   ├── NightsInput/
+│   │   │   │   └── index.tsx
+│   │   │   ├── RegionSelect/
+│   │   │   │   └── index.tsx
+│   │   │   └── TravelersInput/
+│   │   │       └── index.tsx
+│   │   └── index.tsx
+├── data/
+│   ├── areas.ts
+│   ├── continents.ts
+│   ├── departureCities.ts
+│   ├── destinations.ts
+│   ├── dynamicPricing.ts
+│   ├── hotels.ts
+│   ├── mealPlans.ts
+│   ├── mockData.ts
+│   ├── regions.ts
+│   └── trips.ts
+├── i18n/
+│   └── config.ts
+├── i18n.ts
+├── lib/
+│   ├── db/
+│   │   ├── migrations/
+│   │   │   ├── create_users_table.sql
+│   │   │   └── initial_schema.sql
+│   │   └── (tühjad või muud failid)
+│   ├── db.ts
+│   ├── jwt.ts
+│   ├── middleware/
+│   │   └── authMiddleware.ts
+│   └── swagger/
+│       └── swagger.ts
+├── locales/
+│   └── et/
+│       └── common.json
+├── services/
+│   ├── auth/
+│   │   └── authService.ts
+│   └── translations/
+│       └── translationService.ts
+├── types/
+│   ├── server-action.ts
+│   └── swagger-ui.d.ts
+├── utils/
+│   └── imageUtils.ts
 ```
 
 ### Stiilide Süsteem
@@ -390,6 +496,21 @@ module.exports = {
 - Mobile-first lähenemine
 - Fluid tüpograafia
 - Paindlik grid süsteem
+
+## Swagger / OpenAPI dokumentatsioon
+
+Kõik projekti API endpointid, nende sisend-väljund, vead ja äriloogika on dokumenteeritud käsitsi failis [`/docs/swagger.yaml`](docs/swagger.yaml).
+
+- **Swagger UI** on kättesaadav arenduskeskkonnas aadressil [`/docs`](/docs), mis loeb dokumentatsiooni otse failist `/swagger.yaml` (see kopeeritakse buildi/postbuild scriptiga kausta `/public`).
+- IGA API muudatuse (uue endpointi, parameetri, vea vms) puhul uuenda alati ka YAML-faili!
+- Kui YAML-is on muudatus, tee kindlasti `cp docs/swagger.yaml public/swagger.yaml` (või kasuta automaatset build/postbuild skripti).
+- Tootmiskeskkonnas peab Swagger UI olema parooliga kaitstud või üldse mitte avalik (turvalisuse huvides).
+- Järgi OpenAPI 3.1 standardit, lisa alati näidisandmed ja veakoodid.
+
+Swaggeri täiendamiseks:
+1. Ava `/docs/swagger.yaml` ja lisa/muuda vastav endpoint.
+2. Kopeeri fail käsitsi või las build-skript kopeerib selle `/public/swagger.yaml` kausta.
+3. Kontrolli, et Swagger UI `/docs` lehel kuvatakse muudatused korrektselt.
 
 ## Märkused ja Tähelepanekud
 - Kõik tekstid peavad olema tõlgitavad
